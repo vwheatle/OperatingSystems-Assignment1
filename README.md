@@ -40,6 +40,10 @@ Here's a reinterpretation of the requirements document, in Markdown.
 
 ## What I'm using
 
-I'm... not using C in Linux! I'm using MSYS2 to build and run these programs. Despite this, I'm still using bash, still using gcc, still using pthreads. It should work the exact same on Linux.
+I'm&zwnj;~~... not~~ using C in Linux! I'm using ~~MSYS2~~ *WSL2* to build and run these programs. ~~Despite this,~~ I'm ~~still~~ using bash, ~~still~~ using gcc, ~~still~~ using pthreads. It ~~should~~ work ~~the exact same~~ on Linux.
 
-MSYS2 is so cool...
+Run `build.sh` and `cd` into `bin`. Then you can do the simultaneous thing in the `bin` folder.
+
+## Web resources too
+
+- https://www.cs.cmu.edu/afs/cs/academic/class/15492-f07/www/pthreads.html oh thank god for this

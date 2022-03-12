@@ -12,5 +12,6 @@ set -eu
 
 echo "Building..."
 
+mkdir bin
 echo "producer" ; gcc src/producer.c -pthread -o bin/producer
 echo "consumer" ; gcc src/consumer.c -pthread -o bin/consumer
