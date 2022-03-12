@@ -10,7 +10,7 @@ set -eu
 # https://docs.oracle.com/cd/E86824_01/html/E54772/librt-3lib.html
 # So I might remove that.
 
-echo "Building producer..."
-gcc producer.c -pthread -o producer
-echo "Building consumer..."
-gcc consumer.c -pthread -o consumer
+echo "Building..."
+
+echo "producer" ; gcc src/producer.c -pthread -o bin/producer
+echo "consumer" ; gcc src/consumer.c -pthread -o bin/consumer
