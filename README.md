@@ -47,3 +47,5 @@ Run `build.sh` and `cd` into `bin`. Then you can do the simultaneous thing in th
 ## Web resources too
 
 - https://www.cs.cmu.edu/afs/cs/academic/class/15492-f07/www/pthreads.html oh thank god for this
+<!-- - https://man7.org/linux/man-pages/man0/unistd.h.0p.html -->
+- https://man7.org/linux/man-pages/man0/pthread.h.0p.html

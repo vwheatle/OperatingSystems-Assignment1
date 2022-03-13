@@ -16,24 +16,30 @@ void* do_thing(void* args) {
 	unsigned long int me2 = me >> 11; // strip out trailing zeroes
 	int color = (me2 & 127) + 16; // keep only the low 7 bits and add 16 to make a valid color value
 	
-	printf("\x1B[38;5;%dm [%lx] waiting for a turn on the video game\x1B[0m\n", color, me);
+	printf("\x1B[38;5;%dm", color);
+	printf("[%lx] waiting for a turn on the video game\x1B[0m\n", me);
 	
 	// Try to take 1 from the semaphore.
 	sem_wait(&thingSem);
 	
-	printf("\x1B[38;5;%dm [%lx] gaming\x1B[0m\n", color, me);
+	printf("\x1B[38;5;%dm", color);
+	printf("[%lx] gaming\x1B[0m\n", me);
 	usleep(250);
 	
 	// Put 1 back into the semaphore.
 	sem_post(&thingSem);
 	
-	printf("\x1B[38;5;%dm [%lx] done gaming!\x1B[0m\n", color, me);
+	printf("\x1B[38;5;%dm", color);
+	printf("[%lx] done gaming!\x1B[0m\n", me);
 }
 
 int main() {
 	// Creates the semaphore with an initial value of 1.
 	// Change that third argument to change the amount of gamers allowed at a time.
-	sem_init(&thingSem, 0, 1);
+	if (sem_init(&thingSem, 0, 1) < 0) {
+		printf("Failed to init semaphore!\n");
+		exit(1);
+	}
 	
 	pthread_t threads[NUM_THREADS];
 	
