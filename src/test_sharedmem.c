@@ -23,7 +23,6 @@ int colorFromPid(pid_t p) { // i don't like this, but it kinda works
 #define printf_withme(format, ...) printf("\033[%dm[%d]\033[0m " format, colorFromPid(me), me __VA_OPT__(,) __VA_ARGS__);
 #define perror_withme(message) printf_withme("!!! "); perror(message)
 
-#define theSemName "/testingshmIsHost"
 #define theShmName "/testingshm"
 
 typedef struct {

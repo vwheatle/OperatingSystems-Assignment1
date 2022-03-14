@@ -14,5 +14,13 @@ echo "Building..."
 
 mkdir -p out
 
+echo "The actual stuff you wanted:"
+
 echo "producer" ; gcc ./src/producer.c -pthread -lrt -Wall -Wunused -Wuninitialized -o ./out/producer
 echo "consumer" ; gcc ./src/consumer.c -pthread -lrt -Wall -Wunused -Wuninitialized -o ./out/consumer
+
+echo "The testing grounds stuff:"
+
+echo "test_race_cond" ; gcc ./src/test_race_cond.c -pthread -lrt -Wall -Wunused -Wuninitialized -o ./out/test_race_cond
+echo "test_semaphore" ; gcc ./src/test_semaphore.c -pthread -lrt -Wall -Wunused -Wuninitialized -o ./out/test_semaphore
+echo "test_sharedmem" ; gcc ./src/test_sharedmem.c -pthread -lrt -Wall -Wunused -Wuninitialized -o ./out/test_sharedmem
