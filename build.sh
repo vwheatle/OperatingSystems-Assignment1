@@ -12,6 +12,7 @@ set -eu
 
 echo "Building..."
 
-mkdir bin
-echo "producer" ; gcc src/producer.c -pthread -lrt -o out/producer
-echo "consumer" ; gcc src/consumer.c -pthread -lrt -o out/consumer
+mkdir -p out
+
+echo "producer" ; gcc ./src/producer.c -pthread -lrt -Wall -Wunused -Wuninitialized -o ./out/producer
+echo "consumer" ; gcc ./src/consumer.c -pthread -lrt -Wall -Wunused -Wuninitialized -o ./out/consumer
