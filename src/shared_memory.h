@@ -6,6 +6,7 @@
 
 #define TABLE_NAME "/myProdCnsmTable"
 #define TABLE_SPACE 2
+#define TABLE_ITERATIONS 16
 
 typedef int table_item_t;
 
@@ -16,8 +17,8 @@ typedef struct {
 	table_item_t buffer[TABLE_SPACE];
 	int nextIn, nextOut;
 	
-	int iterations;
 	bool isReady;
+	int population;
 } table_t;
 
 // Set the table. (Forks, knives, plates not included)
@@ -28,8 +29,6 @@ void initializeTable(table_t* table) {
 	sem_init(&table->empty, /*Procs share?*/ 1, /*Num.*/ TABLE_SPACE);
 	
 	// Don't need to initialize buffer, as it is guaranteed to be all zeroes.
-	
-	table->iterations = 10;
 	
 	// Shared memory, when initialized, is zero bytes long. Each process that
 	// gets the shared memory object must use ftruncate to expand the memory
@@ -52,6 +51,13 @@ void initializeTable(table_t* table) {
 	// which process "got there first" and puts it in charge of setup.
 	// In the producer/consumer project, I'm planning to recreate this *AND*
 	// put *ONLY* the producer in charge of cleanup afterwards.
+}
+
+void destroyTable(table_t* table) {
+	table->isReady = false;
+	sem_destroy(&table->full );
+	sem_destroy(&table->empty);
+	sem_destroy(&table->mutex);
 }
 
 // UNSAFE: should not be called if nothing in table.

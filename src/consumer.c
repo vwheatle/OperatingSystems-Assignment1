@@ -12,7 +12,7 @@
 
 #include <semaphore.h> // -> semaphores
 
-#include "shared_memory.h"
+#include "shared_memory.h" // -> table_t; TABLE_NAME; initializeTable
 
 #define PROC_LABEL_STR "\033[96mConsumer\033[0m: "
 
@@ -24,7 +24,7 @@
 
 void meat(table_t* table) {
 	table_item_t myItem;
-	bool shouldContinue = true;
+	int iterationsLeft = TABLE_ITERATIONS;
 	
 	printf_label("Starting.\n");
 	
@@ -34,22 +34,20 @@ void meat(table_t* table) {
 		
 		// Take from the buffer.
 		myItem = getItem(table);
-		shouldContinue = table->iterations > 0;
 		
 		sem_post(&table->mutex); // Exit critical section.
 		sem_post(&table->empty); // Put 1 empty space.
 		
 		// Consume something.
 		printf_label("Ate %d.\n", myItem);
-	} while (shouldContinue);
+		
+		iterationsLeft--;
+	} while (iterationsLeft > 0);
 	
 	printf_label("Stopping.\n");
 }
 
 int main() {
-	// TODO: see if test_sharedmem.c's way of error quitting was the right idea.
-	// I'm wondering if it's fine to let the operating system clean up most of
-	// the resources for me. It might also be a jerk move.
 	bool successful = false;
 	
 	printf_label("Hello, world!\n");
@@ -85,10 +83,11 @@ int main() {
 	// Resize it to the actual amount needed.
 	// This won't do anything bad if all processes do it.
 	if (ftruncate(fd, sizeof(table_t)) < 0) {
-		perror_exit("Extending shared memory failed");
+		perror_label("Extending shared memory failed");
+		goto die;
 	}
 	
-	// Map the shared memory into this program's addr. space.
+	// Map the shared memory into this process' address space.
 	// This returns a pointer to what is essentially our struct.
 	table_t* table = mmap(
 		NULL, sizeof(table_t),  // address & size
@@ -96,7 +95,8 @@ int main() {
 		MAP_SHARED, fd, 0       // other stuff
 	);
 	if (table == MAP_FAILED) {
-		perror_exit("Memory mapping failed");
+		perror_label("Memory mapping failed");
+		goto die;
 	}
 	
 	// We've already decided if this process should initialize the table
@@ -112,13 +112,30 @@ int main() {
 	
 	// Table is completely working after this part.
 	
+	// Arrive
+	sem_wait(&table->mutex);
+	table->population++;
+	sem_post(&table->mutex);
+	
 	meat(table);
+	
+	// Leave
+	sem_wait(&table->mutex);
+	table->population--;
+	bool hasCleanupDuty = table->population == 0;
+	sem_post(&table->mutex);
 	
 	successful = true;
 	
-die_unmap:
-	// Inverse of mmap
+	if (hasCleanupDuty) {
+		printf_label("Cleaning up.\n");
+		destroyTable(table);
+	}
+	
+	// Unmap shared memory from process' address space.
 	munmap(table, sizeof(table_t));
+	table = NULL;
+	
 die:
 	// Closes shared memory handle...
 	close(fd);
