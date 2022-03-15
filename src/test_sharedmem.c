@@ -1,3 +1,12 @@
+// ~~~ READ ~~~
+// Okay so.. this is probably not going to be ever used in a program, is it.
+// 
+// The best way to go about this is to mark the first process that arrives as
+// the one that has to outlive everyone else. Simplify the structure by
+// making all the other processes into what are essentially threads.
+// 
+// Fun time-waster project though.
+
 #include <stdio.h>   // -> printf
 #include <stdlib.h>  // -> exit, etc.
 #include <stdbool.h> // -> booleans?! (surprised)
@@ -10,7 +19,6 @@
 #include <sys/stat.h>  // -> mode constants; fstat
 #include <fcntl.h>     // -> O_* constants
 
-#include <pthread.h>   // -> pthreads
 #include <semaphore.h> // -> semaphores
 
 // Really bad macro I'm going to use extensively anyway.
