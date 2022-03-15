@@ -7,18 +7,29 @@
 #define TABLE_NAME "/myProdCnsmTable"
 #define TABLE_SPACE 2
 
+typedef int table_item_t;
+
 typedef struct {
 	sem_t mutex;
+	
 	sem_t full, empty;
+	table_item_t buffer[TABLE_SPACE];
+	int nextIn, nextOut;
+	
+	int iterations;
 	bool isReady;
 } table_t;
 
 // Set the table. (Forks, knives, plates not included)
 void initializeTable(table_t* table) {
-	sem_init(&table->mutex, /*Procs share?*/ 1, /*Quantity*/ 1);
+	sem_init(&table->mutex, /*Procs share?*/ 1, /*Num.*/ 1);
 	
-	sem_init(&table->full , /*Procs share?*/ 1, /*Quantity*/ 0);
-	sem_init(&table->empty, /*Procs share?*/ 1, /*Quantity*/ TABLE_SPACE);
+	sem_init(&table->full , /*Procs share?*/ 1, /*Num.*/ 0);
+	sem_init(&table->empty, /*Procs share?*/ 1, /*Num.*/ TABLE_SPACE);
+	
+	// Don't need to initialize buffer, as it is guaranteed to be all zeroes.
+	
+	table->iterations = 10;
 	
 	// Shared memory, when initialized, is zero bytes long. Each process that
 	// gets the shared memory object must use ftruncate to expand the memory
@@ -41,4 +52,19 @@ void initializeTable(table_t* table) {
 	// which process "got there first" and puts it in charge of setup.
 	// In the producer/consumer project, I'm planning to recreate this *AND*
 	// put *ONLY* the producer in charge of cleanup afterwards.
+}
+
+// UNSAFE: should not be called if nothing in table.
+// UNSAFE: should not be called outside mutex.
+table_item_t getItem(table_t* table) {
+	table_item_t result = table->buffer[table->nextOut];
+	table->nextOut = (table->nextOut + 1) % TABLE_SPACE;
+	return result;
+}
+
+// UNSAFE: should not be called if all space is filled in table.
+// UNSAFE: should not be called outside mutex.
+void putItem(table_t* table, table_item_t item) {
+	table->buffer[table->nextIn] = item;
+	table->nextIn = (table->nextIn + 1) % TABLE_SPACE;
 }

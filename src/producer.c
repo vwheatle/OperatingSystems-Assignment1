@@ -23,17 +23,28 @@
 // do {} while (0) used in man pages, explained https://stackoverflow.com/a/9496007/
 
 void meat(table_t* table) {
+	table_item_t myItem;
+	bool shouldContinue = true;
+	
+	printf_label("Starting.\n");
+	
 	do {
 		// Produce something.
+		myItem = rand() & 0xFF;
+		printf_label("Made %d.\n", myItem);
 		
-		sem_wait(&table->empty);
-		sem_wait(&table->mutex);
+		sem_wait(&table->empty); // Get 1 empty space.
+		sem_wait(&table->mutex); // Enter critical section.
 		
 		// Put it in the buffer.
+		putItem(table, myItem);
+		shouldContinue = (--table->iterations) > 0;
 		
-		sem_post(&table->mutex);
-		sem_post(&table->full);
-	} while (true);
+		sem_post(&table->mutex); // Exit critical section.
+		sem_post(&table->full ); // Put 1 item.
+	} while (shouldContinue);
+	
+	printf_label("Stopping.\n");
 }
 
 int main() {
