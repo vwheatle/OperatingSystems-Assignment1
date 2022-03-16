@@ -31,6 +31,8 @@ void* do_thing(void* args) {
 	
 	printf("\x1B[38;5;%dm", color);
 	printf("[%lx] done gaming!\x1B[0m\n", me);
+	
+	return NULL;
 }
 
 int main() {

@@ -20,6 +20,8 @@ void* thread_wrong_fn(void* arg) {
 	}
 	
 	// printf("%ld incs by 10; thing is now %d\n", me, thing);
+	
+	return NULL;
 }
 
 void* thread_right_fn(void* arg) {
@@ -31,6 +33,8 @@ void* thread_right_fn(void* arg) {
 	}
 	
 	pthread_mutex_unlock(&thingMutex);
+	
+	return NULL;
 }
 
 int main() {
