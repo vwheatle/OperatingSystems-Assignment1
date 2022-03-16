@@ -1,3 +1,5 @@
+#pragma once
+
 #include <stdio.h>   // -> printf
 #include <stdlib.h>  // -> exit, etc.
 #include <stdbool.h> // -> booleans?! (surprised)
