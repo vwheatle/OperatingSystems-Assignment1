@@ -55,5 +55,6 @@ int main() {
 	
 	// Afterwards, close the table -- and if it's not zero, then something
 	// went wrong. Even if that happens, we still exit the program.
-	exit(closeTableSync(table) == 0 ? EXIT_SUCCESS : EXIT_FAILURE);
+	bool successful = closeTableSync(table) == 0;
+	exit(successful ? EXIT_SUCCESS : EXIT_FAILURE);
 }
