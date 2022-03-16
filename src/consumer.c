@@ -2,19 +2,14 @@
 #include <stdlib.h>  // -> exit, etc.
 #include <stdbool.h> // -> booleans?! (surprised)
 
-#include <errno.h> // -> errno
-
-// #include <sys/types.h> // -> types for shared memory
-// #include <sys/mman.h>  // -> shared memory
-// #include <sys/stat.h>  // -> mode constants; fstat
-// #include <fcntl.h>     // -> O_* constants
-
 #include <semaphore.h> // -> semaphores
 
 #include "shared_memory.h" // -> table_t; TABLE_NAME; initializeTable
 
+// This will be displayed alongside the process' printf_label statements,
+// as well as the process' perrors if any. (I hope not any!)
 #define PROC_LABEL_STR "\033[96m"  "Consumer"  "\033[0m: "
-#include "process_sync.h"
+#include "process_sync.h" // -> {open|close}TableSync, printf_label, ...
 
 void meat(table_t* table) {
 	table_item_t myItem;
@@ -44,12 +39,20 @@ void meat(table_t* table) {
 int main() {
 	printf_label("Hello, world!\n");
 	
+	// Get the table_t struct.
 	table_t* table = openTableSync();
-	if (table == NULL) exit(EXIT_FAILURE);
 	
+	// openTableSync (after printing error information)
+	// returns a null pointer if the open failed.
+	if (table == NULL) {
+		exit(EXIT_FAILURE);
+	}
+	
+	// Otherwise, run the real program.
+	// The "Meat and Potatoes".
 	meat(table);
 	
-	if (closeTableSync(table) != 0) exit(EXIT_FAILURE);
-	
-	exit(EXIT_SUCCESS);
+	// Afterwards, close the table -- and if it's not zero, then something
+	// went wrong. Even if that happens, we still exit the program.
+	exit(closeTableSync(table) == 0 ? EXIT_SUCCESS : EXIT_FAILURE);
 }
