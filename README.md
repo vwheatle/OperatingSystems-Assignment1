@@ -4,7 +4,9 @@ Assignment 1
 
 # Producer-Consumer Problem
 
-This consists of two C programs -- one a Producer, and the other a Consumer. The Producer creates integers, and the Consumer consumes them. They're both separate programs that'll communicate with POSIX shared memory.
+This consists of two C programs -- one a Producer, and the other a Consumer. The Producer creates integers, and the Consumer consumes them. They're both separate programs that communicate using POSIX shared memory.
+
+![A screenshot of the producer and consumer programs in action, in both Linux (left) and Windows, using WSL2 (right)](.readme/linuxAndWSL2.png)
 
 ## Project Layout
 
