@@ -28,7 +28,7 @@ pid_t me;
 int colorFromPid(pid_t p) { // i don't like this, but it kinda works
 	int pt = p & 7; return pt >= 4 ? (pt - 4 + 91) : (pt + 31);
 }
-#define printf_withme(format, ...) printf("\033[%dm[%d]\033[0m " format, colorFromPid(me), me __VA_OPT__(,) __VA_ARGS__);
+#define printf_withme(...) printf("\033[%dm[%d]\033[0m ", colorFromPid(me), me); printf(__VA_ARGS__)
 #define perror_withme(message) printf_withme("!!! "); perror(message)
 
 #define theShmName "/testingshm"
