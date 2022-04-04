@@ -4,7 +4,7 @@
 
 #include <semaphore.h> // -> semaphores
 
-#include "shared_memory.h" // -> table_t; TABLE_NAME; initializeTable
+#include "shared_table.h" // -> table_t; TABLE_NAME; initializeTable
 
 // This will be displayed alongside the process' printf_label statements,
 // as well as the process' perrors if any. (I hope not any!)

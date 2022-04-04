@@ -11,7 +11,7 @@
 #include <sys/mman.h>  // -> shared memory
 #include <fcntl.h>     // -> O_* constants
 
-#include "shared_memory.h"
+#include "shared_table.h"
 
 #ifndef PROC_LABEL_STR
 # define PROC_LABEL_STR "\033[97m" "Unknown" "\033[0m: "
