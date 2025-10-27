@@ -1,10 +1,14 @@
-V Wheatley  
+Lynne Wheatley  
 Operating Systems  
 Assignment 1
 
 # Producer-Consumer Problem
 
 This consists of two C programs -- one a Producer, and the other a Consumer. The Producer creates integers, and the Consumer consumes them. They're both separate programs that communicate using POSIX shared memory.
+
+I used three semaphores to allow for an unlimited number of producers and consumers, and I also used `O_EXCL` along with a carefully-prepared spinlock to determine which singular process is in charge of initializing the table at runtime. For more information, look at the comment in `shared_table.h` about the `isReady` field on the shared memory table.
+
+![A screenshot of the producer and consumer programs in action, running in separate terminals, side-by-side in Linux](.readme/linuxOnly.png)
 
 ![A screenshot of the producer and consumer programs in action, in both Linux (left) and Windows, using WSL2 (right)](.readme/linuxAndWSL2.png)
 
@@ -60,11 +64,15 @@ Here's a reinterpretation of the requirements document, in Markdown.
 
 I'm using C in Linux! I'm using [*WSL2*](https://docs.microsoft.com/en-us/windows/wsl/) to build and run these programs. I'm using bash, using gcc, using POSIX shared memory. It work on Linux. [sic]
 
-Run `build.sh`. It will create the `out` folder, which will contain the binaries. Simply do...
+> As of 2025, I'm running Linux as my main operating system of choice. I was able to build this just fine on my installation of openSuSE Tumbleweed.
+
+Run `build.sh`. It will create the `out` folder, which will contain the binaries. Inside that folder, simply do...
 
 ```shell
 ./producer & ./consumer & sleep 2s
 ```
+
+> It's also sufficient to just call each one on your own time! Both the processes can and will wait until they have things to produce/consume!
 
 ...and it should output something like the following:
 
@@ -97,6 +105,106 @@ Run `build.sh`. It will create the `out` folder, which will contain the binaries
 ```
 
 The numbers and order will be random, but there will be the same amount of corresponding `Made %d` and `Ate %d` messages.
+
+### A more advanced example (2025)
+
+This creates four processes, and as you can see, this solution is robust enough to handle situations like this.
+
+```bash
+$ ./out/producer & ./out/producer & ./out/consumer & ./out/consumer
+[1] <pid 2>
+[2] <pid 3>
+[3] <pid 4>
+Producer: Hello, world!
+Producer: In charge of shared memory initialization.
+Producer: Hello, world!
+Producer: Not in charge of shared memory initialization.
+Producer: Done initializing.
+Producer: Starting.
+Producer: Made 103.
+Producer: Made 198.
+Producer: Made 105.
+Producer: Waiting for ready flag...
+Producer: Starting.
+Producer: Made 103.
+Consumer: Hello, world!
+Consumer: Not in charge of shared memory initialization.
+Consumer: Waiting for ready flag...
+Consumer: Starting.
+Consumer: Ate 103.
+Consumer: Ate 198.
+Producer: Made 115.
+Consumer: Ate 105.
+Producer: Made 198.
+Producer: Made 81.
+Consumer: Ate 103.
+Producer: Made 105.
+Consumer: Ate 115.
+Producer: Made 255.
+Producer: Made 74.
+Consumer: Ate 198.
+Consumer: Ate 81.
+Producer: Made 115.
+Producer: Made 81.
+Consumer: Ate 255.
+Consumer: Ate 105.
+Producer: Made 255.
+Producer: Made 236.
+Consumer: Ate 115.
+Consumer: Ate 81.
+Consumer: Ate 74.
+Producer: Made 74.
+Consumer: Ate 255.
+Producer: Made 236.
+Producer: Made 41.
+Consumer: Ate 74.
+Producer: Made 41.
+Consumer: Ate 236.
+Producer: Made 205.
+Consumer: Ate 236.
+Producer: Made 205.
+Consumer: Stopping.
+Consumer: Hello, world!
+Consumer: Not in charge of shared memory initialization.
+Consumer: Waiting for ready flag...
+Consumer: Starting.
+Consumer: Ate 41.
+Producer: Made 186.
+Producer: Made 171.
+Consumer: Ate 41.
+Consumer: Ate 205.
+Producer: Made 242.
+Producer: Made 251.
+Consumer: Ate 186.
+Producer: Made 186.
+Consumer: Ate 171.
+Producer: Made 171.
+Consumer: Ate 242.
+Consumer: Ate 205.
+Producer: Made 227.
+Producer: Made 70.
+Consumer: Ate 186.
+Consumer: Ate 251.
+Producer: Stopping.
+Consumer: Ate 227.
+Producer: Made 242.
+Consumer: Ate 70.
+Producer: Made 251.
+Consumer: Ate 171.
+Producer: Made 227.
+Consumer: Ate 242.
+Producer: Made 70.
+Consumer: Ate 251.
+Producer: Stopping.
+Consumer: Ate 227.
+Consumer: Ate 70.
+Consumer: Stopping.
+Consumer: Cleaning up.
+[1]   Done                       ./out/producer
+[2]-  Done                       ./out/producer
+[3]+  Done                       ./out/consumer
+$
+```
 
 ## Resources Used
 
